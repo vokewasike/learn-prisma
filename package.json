@@ -1,23 +1,23 @@
 {
   "private": true,
-  "name": "hello-prisma",
+  "name": "learn-prisma",
   "version": "1.0.0",
   "description": "",
+  "workspaces": [
+    "hello-prisma"
+  ],
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "npx tsx script.ts"
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vokewasike/learn-prisma.git"
   },
   "keywords": [],
-  "author": "",
+  "author": "Kevin Wasike",
   "license": "ISC",
-  "type": "commonjs",
-  "devDependencies": {
-    "@types/node": "^22.13.9",
-    "prisma": "^6.4.1",
-    "tsx": "^4.19.3",
-    "typescript": "^5.8.2"
+  "bugs": {
+    "url": "https://github.com/vokewasike/learn-prisma/issues"
   },
-  "dependencies": {
-    "@prisma/client": "^6.4.1"
-  }
+  "homepage": "https://github.com/vokewasike/learn-prisma#readme"
 }
