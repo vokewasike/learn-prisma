@@ -1,6 +1,6 @@
 {
   "private": true,
-  "name": "hello-prisma",
+  "name": "quickstart",
   "version": "1.0.0",
   "description": "",
   "scripts": {

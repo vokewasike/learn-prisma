@@ -18,8 +18,8 @@ You need [Node.js](https://nodejs.org/en/) installed on your machine (see [syste
 As a first step, create a project directory and navigate into it:
 
 ```bash
-mkdir hello-prisma
-cd hello-prisma
+mkdir quickstart
+cd quickstart
 ```
 
 Next, initialize a TypeScript project using npm:
@@ -172,13 +172,13 @@ Instead of copying the code, you can type it out in your editor to experience th
 
 Next, execute the script with the following command:
 
-``` bash
+```bash
 npx tsx script.ts
 ```
 
 Output:
 
-``` console
+```console
 { id: 1, email: 'alice@prisma.io', name: 'Alice' }
 ```
 
@@ -188,114 +188,118 @@ In the next section, you'll learn how to read data from the database.
 
 ### 4.2. Retrieve all `User` records
 
-Prisma Client offers various queries to read data from your database. In this section, you'll use the `findMany` query that returns *all* the records in the database for a given model.
+Prisma Client offers various queries to read data from your database. In this section, you'll use the `findMany` query that returns _all_ the records in the database for a given model.
 
 Delete the previous Prisma Client query and add the new `findMany` query instead:
 
 `script.ts`
-``` ts
-import { PrismaClient } from '@prisma/client'
 
-const prisma = new PrismaClient()
+```ts
+import { PrismaClient } from "@prisma/client";
+
+const prisma = new PrismaClient();
 
 async function main() {
   // Remove previous query
   // Add the following code to retrieve User records
-  const users = await prisma.user.findMany()
-  console.log(users)
+  const users = await prisma.user.findMany();
+  console.log(users);
 }
 
 main()
   .then(async () => {
-    await prisma.$disconnect()
+    await prisma.$disconnect();
   })
   .catch(async (e) => {
-    console.error(e)
-    await prisma.$disconnect()
-    process.exit(1)
-  })
+    console.error(e);
+    await prisma.$disconnect();
+    process.exit(1);
+  });
 ```
 
 Execute the script again:
 
-``` bash
+```bash
 npx tsx script.ts
 ```
 
 Output:
 
-``` console
+```console
 [{ id: 1, email: 'alice@prisma.io', name: 'Alice' }]
 ```
 
 Notice how the single `User` object is now enclosed with square brackets in the console. That's because the `findMany` returned an array with a single object inside.
 
 ### 4.3. Explore relation queries with Prisma Client
+
 One of the main features of Prisma Client is the ease of working with [relations](https://www.prisma.io/docs/orm/prisma-schema/data-model/relations). In this section, you'll learn how to create a `User` and a `Post` record in a nested write query. Afterwards, you'll see how you can retrieve the relation from the database using the `include` option.
 
 First, adjust your script to include the nested query:
 
 `script.ts`
-``` ts
-import { PrismaClient } from '@prisma/client'
 
-const prisma = new PrismaClient()
+```ts
+import { PrismaClient } from "@prisma/client";
+
+const prisma = new PrismaClient();
 
 async function main() {
   // Remove previous query and add the following code
   const user = await prisma.user.create({
     data: {
-      name: 'Bob',
-      email: 'bob@prisma.io',
+      name: "Bob",
+      email: "bob@prisma.io",
       posts: {
         create: [
           {
-            title: 'Hello World',
-            published: true
+            title: "Hello World",
+            published: true,
           },
           {
-            title: 'My second post',
-            content: 'This is still a draft'
-          }
+            title: "My second post",
+            content: "This is still a draft",
+          },
         ],
       },
     },
-  })
-  console.log(user)
+  });
+  console.log(user);
 }
 
 main()
   .then(async () => {
-    await prisma.$disconnect()
+    await prisma.$disconnect();
   })
   .catch(async (e) => {
-    console.error(e)
-    await prisma.$disconnect()
-    process.exit(1)
-  })
+    console.error(e);
+    await prisma.$disconnect();
+    process.exit(1);
+  });
 ```
 
 Run the query by executing the script again:
 
-``` bash
+```bash
 npx tsx script.ts
 ```
 
 Output:
 
-``` console
+```console
 { id: 2, email: 'bob@prisma.io', name: 'Bob' }
 ```
 
-By default, Prisma Client only returns *scalar* fields in the result objects of a query. That's why, even though you also created a new `Post` record for the new `User` record, the console only printed an object with three scalar fields: `id`, `email` and `name`.
+By default, Prisma Client only returns _scalar_ fields in the result objects of a query. That's why, even though you also created a new `Post` record for the new `User` record, the console only printed an object with three scalar fields: `id`, `email` and `name`.
 
 In order to also retrieve the `Post` records that belong to a `User`, you can use the `include` option via the `posts` relation field:
 
 `script.ts`
-``` ts
-import { PrismaClient } from '@prisma/client'
 
-const prisma = new PrismaClient()
+```ts
+import { PrismaClient } from "@prisma/client";
+
+const prisma = new PrismaClient();
 
 async function main() {
   // Remove previous query and add the following code
@@ -303,30 +307,30 @@ async function main() {
     include: {
       posts: true,
     },
-  })
-  console.dir(usersWithPosts, { depth: null })
+  });
+  console.dir(usersWithPosts, { depth: null });
 }
 
 main()
   .then(async () => {
-    await prisma.$disconnect()
+    await prisma.$disconnect();
   })
   .catch(async (e) => {
-    console.error(e)
-    await prisma.$disconnect()
-    process.exit(1)
-  })
+    console.error(e);
+    await prisma.$disconnect();
+    process.exit(1);
+  });
 ```
 
 Run the script again to see the results of the nested read query:
 
-``` bash
+```bash
 npx tsx script.ts
 ```
 
 Output:
 
-``` console
+```console
 [
   { id: 1, email: 'alice@prisma.io', name: 'Alice', posts: [] },
   {
@@ -365,7 +369,7 @@ In this Quickstart guide, you have learned how to get started with Prisma ORM in
 
 Prisma ORM comes with a built-in GUI to view and edit the data in your database. You can open it using the following command:
 
-``` bash
+```bash
 npx prisma studio
 ```
 
@@ -375,4 +379,3 @@ If you want to move forward with Prisma ORM using your own PostgreSQL, MySQL, Mo
 
 - [Start with Prisma ORM from scratch](https://www.prisma.io/docs/getting-started/setup-prisma/start-from-scratch/relational-databases-typescript-postgresql)
 - [Add Prisma ORM to an existing project](https://www.prisma.io/docs/getting-started/setup-prisma/add-to-existing-project/relational-databases-typescript-postgresql)
-
