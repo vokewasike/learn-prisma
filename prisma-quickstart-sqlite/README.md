@@ -373,6 +373,10 @@ Prisma ORM comes with a built-in GUI to view and edit the data in your database.
 npx prisma studio
 ```
 
+``` shell
+npx prisma studio --port 5555
+```
+
 ### Set up Prisma ORM with your own database
 
 If you want to move forward with Prisma ORM using your own PostgreSQL, follow the Set Up Prisma ORM guides:
