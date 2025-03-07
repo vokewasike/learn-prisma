@@ -4,9 +4,9 @@
 
 In this Quickstart guide, you'll learn how to get started with Prisma ORM from scratch using a plain TypeScript project and a local SQLite database file. It covers data modeling, migrations and querying a database.
 
-If you want to use Prisma ORM with your own PostgreSQL, MySQL, MongoDB or any other supported database, go here instead:
+If you want to use Prisma ORM with your own PostgreSQL database, go here instead:
 
-- [Start with Prisma ORM from scratch](https://www.prisma.io/docs/getting-started/setup-prisma/start-from-scratch/relational-databases-typescript-postgresql)
+- [Start with Prisma ORM from scratch](../prisma-postgresql/README.md)
 - [Add Prisma ORM to an existing project](https://www.prisma.io/docs/getting-started/setup-prisma/add-to-existing-project/relational-databases-typescript-postgresql)
 
 ## Prerequisites
@@ -375,7 +375,7 @@ npx prisma studio
 
 ### Set up Prisma ORM with your own database
 
-If you want to move forward with Prisma ORM using your own PostgreSQL, MySQL, MongoDB or any other supported database, follow the Set Up Prisma ORM guides:
+If you want to move forward with Prisma ORM using your own PostgreSQL, follow the Set Up Prisma ORM guides:
 
-- [Start with Prisma ORM from scratch](https://www.prisma.io/docs/getting-started/setup-prisma/start-from-scratch/relational-databases-typescript-postgresql)
+- [Start with Prisma ORM from scratch](../prisma-postgresql/README.md)
 - [Add Prisma ORM to an existing project](https://www.prisma.io/docs/getting-started/setup-prisma/add-to-existing-project/relational-databases-typescript-postgresql)
