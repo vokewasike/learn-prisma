@@ -1,4 +1,5 @@
 # Prisma Postgresql
+
 - https://www.prisma.io/docs/getting-started/setup-prisma/start-from-scratch/relational-databases-typescript-postgresql
 
 Learn how to create a new Node.js or TypeScript project from scratch by connecting Prisma ORM to your database and generating a Prisma Client for database access. The following tutorial introduces you to the [Prisma CLI](https://www.prisma.io/docs/orm/tools/prisma-cli), [Prisma Client](https://www.prisma.io/docs/orm/prisma-client), and [Prisma Migrate](https://www.prisma.io/docs/orm/prisma-migrate).
@@ -63,22 +64,25 @@ This command does two things:
 - creates the `.env` file in the root directory of the project, which is used for defining environment variables (such as your database connection)
 
 ## 2. Connect your database
+
 - https://www.prisma.io/docs/getting-started/setup-prisma/start-from-scratch/relational-databases/connect-your-database-typescript-postgresql
 
 To connect your database, you need to set the `url` field of the `datasource` block in your Prisma schema to your database [connection URL](https://www.prisma.io/docs/orm/reference/connection-urls):
 
 `prisma/schema.prisma`
-``` prisma
+
+```prisma
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
-``` 
+```
 
 In this case, the `url` is [set via an environment variable](https://www.prisma.io/docs/orm/more/development-environment/environment-variables) which is defined in `.env`:
 
 `.env`
-``` 
+
+```
 DATABASE_URL="postgresql://johndoe:randompassword@localhost:5432/mydb?schema=public"
 ```
 
@@ -107,6 +111,7 @@ If you're unsure what to provide for the `schema` parameter for a PostgreSQL con
 As an example, for a PostgreSQL database hosted on Heroku, the [connection URL](https://www.prisma.io/docs/orm/reference/connection-urls) might look similar to this:
 
 `.env`
+
 ```
 DATABASE_URL="postgresql://opnmyfngbknppm:XXX@ec2-46-137-91-216.eu-west-1.compute.amazonaws.com:5432/d50rgmkqi2ipus?schema=hello-prisma"
 ```
@@ -114,6 +119,7 @@ DATABASE_URL="postgresql://opnmyfngbknppm:XXX@ec2-46-137-91-216.eu-west-1.comput
 When running PostgreSQL locally on macOS, your user and password as well as the database name typically correspond to the current user of your OS, e.g. assuming the user is called `janedoe`:
 
 `.env`
+
 ```
 DATABASE_URL="postgresql://janedoe:janedoepassword@localhost:5432/janedoe
 ```
@@ -124,9 +130,9 @@ DATABASE_URL="postgresql://janedoe:janedoepassword@localhost:5432/janedoe
 
 In this guide, you'll use [Prisma Migrate](https://www.prisma.io/docs/orm/prisma-migrate) to create the tables in your database. Add the following data model to your [Prisma schema](https://www.prisma.io/docs/orm/prisma-schema) in `prisma/schema.prisma`:
 
-``` prisma
+```prisma
 model Post {
-  id        Int      @id @default(autoincrement())
+  id        String   @id @default(uuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   title     String   @db.VarChar(255)
@@ -137,7 +143,7 @@ model Post {
 }
 
 model Profile {
-  id     Int     @id @default(autoincrement())
+  id     String  @id @default(cuid())
   bio    String?
   user   User    @relation(fields: [userId], references: [id])
   userId Int     @unique
@@ -154,7 +160,7 @@ model User {
 
 To map your data model to the database schema, you need to use the `prisma migrate` CLI commands:
 
-``` bash
+```bash
 npx prisma migrate dev --name init
 ```
 
@@ -163,10 +169,83 @@ This command does two things:
 1. It creates a new SQL migration file for this migration
 2. It runs the SQL migration file against the database
 
-> ⚠️ **NOTE** <br>
-> `generate` is called under the hood by default, after running `prisma migrate dev`. If the `prisma-client-js` generator is defined in your schema, this will check if `@prisma/client` is installed and install it if it's missing.
+> ⚠️ **NOTE** <br> > `generate` is called under the hood by default, after running `prisma migrate dev`. If the `prisma-client-js` generator is defined in your schema, this will check if `@prisma/client` is installed and install it if it's missing.
 
 Great, you now created three tables in your database with Prisma Migrate 🚀
+
+### 3.2. Understanding ID Types in the Schema
+
+The schema above demonstrates three different types of IDs, but Prisma supports several more:
+
+1. **UUID (`Post.id`):**
+
+   - 128-bit globally unique identifier
+   - Example: `123e4567-e89b-12d3-a456-426614174000`
+   - Best for distributed systems and data synchronization
+   - Defined using `@id @default(uuid())`
+
+2. **CUID (`Profile.id`):**
+
+   - Collision-resistant unique identifier
+   - Example: `ckxhkgd4w0000hp98e7tk0l3k`
+   - Better for URLs and distributed web applications
+   - Defined using `@id @default(cuid())`
+
+3. **Autoincrement (`User.id`):**
+   - Sequential numeric identifier (1, 2, 3, ...)
+   - Smallest storage footprint
+   - Best for single-database applications
+   - Defined using `@id @default(autoincrement())`
+
+Additional ID types include:
+
+4. **Nanoid:**
+
+   - 21 characters long, URL-friendly
+   - Good for client-side ID generation
+
+   ```prisma
+   id String @id @default(nanoid())
+   ```
+
+5. **BigInt Autoincrement:**
+
+   - For datasets larger than 2^31 - 1
+
+   ```prisma
+   id BigInt @id @default(autoincrement())
+   ```
+
+6. **Composite IDs:**
+
+   - Combine multiple fields as primary key
+
+   ```prisma
+   model CompositePrimaryKey {
+       firstName String
+       lastName  String
+       email     String
+       @@id([firstName, lastName])
+   }
+   ```
+
+7. **DB-Generated:**
+   - Let the database handle ID generation
+   ```prisma
+   id String @id @default(dbgenerated("gen_random_uuid()"))
+   ```
+
+Each ID type has its use case:
+
+- Use **UUID** when you need guaranteed global uniqueness
+- Use **CUID** when you need readable, collision-resistant IDs
+- Use **Autoincrement** for simple, sequential IDs in single-database applications
+- Use **Nanoid** for shorter, URL-friendly IDs
+- Use **BigInt** for very large datasets
+- Use **Composite IDs** for natural keys or join tables
+- Use **DB-Generated** for database-specific ID generation
+
+Note: Not all databases support all ID types. Check Prisma's documentation for compatibility.
 
 ## 4. Install Prisma Client
 
@@ -174,11 +253,11 @@ Great, you now created three tables in your database with Prisma Migrate 🚀
 
 To get started with Prisma Client, you need to install the `@prisma/client` package:
 
-``` bash
+```bash
 npm install @prisma/client
 ```
 
-The install command invokes `prisma generate` for you which reads your Prisma schema and generates a version of Prisma Client that is *tailored* to your models.
+The install command invokes `prisma generate` for you which reads your Prisma schema and generates a version of Prisma Client that is _tailored_ to your models.
 
 ![Prisma Client Install and Generate](./assets/prisma-client-install-and-generate-ece3e0733edc615e416d6d654c05e980.png)
 
@@ -205,10 +284,11 @@ Now that you have generated [Prisma Client](https://www.prisma.io/docs/orm/prism
 Create a new file named `index.ts` and add the following code to it:
 
 `index.ts`
-``` ts
-import { PrismaClient } from '@prisma/client'
 
-const prisma = new PrismaClient()
+```ts
+import { PrismaClient } from "@prisma/client";
+
+const prisma = new PrismaClient();
 
 async function main() {
   // ... you will write your Prisma Client queries here
@@ -216,13 +296,13 @@ async function main() {
 
 main()
   .then(async () => {
-    await prisma.$disconnect()
+    await prisma.$disconnect();
   })
   .catch(async (e) => {
-    console.error(e)
-    await prisma.$disconnect()
-    process.exit(1)
-  })
+    console.error(e);
+    await prisma.$disconnect();
+    process.exit(1);
+  });
 ```
 
 Here's a quick overview of the different parts of the code snippet:
@@ -236,23 +316,24 @@ Here's a quick overview of the different parts of the code snippet:
 Inside the `main` function, add the following query to read all `User` records from the database and print the result:
 
 `index.ts`
-``` ts
+
+```ts
 async function main() {
   // ... you will write your Prisma Client queries here
-  const allUsers = await prisma.user.findMany()
-  console.log(allUsers)
+  const allUsers = await prisma.user.findMany();
+  console.log(allUsers);
 }
 ```
 
 Now run the code with this command:
 
-``` shell
+```shell
 npx tsx index.ts
 ```
 
 This should print an empty array because there are no User records in the database yet:
 
-``` output
+```output
 []
 ```
 
@@ -264,28 +345,28 @@ Adjust the `main` function to send a `create` query to the database:
 
 `index.ts`
 
-``` ts
+```ts
 async function main() {
   await prisma.user.create({
     data: {
-      name: 'Alice',
-      email: 'alice@prisma.io',
+      name: "Alice",
+      email: "alice@prisma.io",
       posts: {
-        create: { title: 'Hello World' },
+        create: { title: "Hello World" },
       },
       profile: {
-        create: { bio: 'I like turtles' },
+        create: { bio: "I like turtles" },
       },
     },
-  })
+  });
 
   const allUsers = await prisma.user.findMany({
     include: {
       posts: true,
       profile: true,
     },
-  })
-  console.dir(allUsers, { depth: null })
+  });
+  console.dir(allUsers, { depth: null });
 }
 ```
 
@@ -295,39 +376,39 @@ Notice that you're passing the `include` option to `findMany` which tells Prisma
 
 Run the code with this command:
 
-``` shell
+```shell
 npx tsx index.ts
 ```
 
 The output should look similar to this:
 
-``` shell
+```shell
 [
   {
-    email: 'alice@prisma.io',
     id: 1,
+    email: 'alice@prisma.io',
     name: 'Alice',
     posts: [
       {
-        content: null,
-        createdAt: 2020-03-21T16:45:01.246Z,
-        updatedAt: 2020-03-21T16:45:01.246Z,
-        id: 1,
-        published: false,
+        id: 'adba97af-e778-4f8c-a23d-68bee76dc54b',
+        createdAt: 2025-03-07T21:11:26.110Z,
+        updatedAt: 2025-03-07T21:11:26.110Z,
         title: 'Hello World',
-        authorId: 1,
+        content: null,
+        published: false,
+        authorId: 1
       }
     ],
     profile: {
+      id: 'cm7z9taqm0000i9xaffrt44dm',
       bio: 'I like turtles',
-      id: 1,
-      userId: 1,
+      userId: 1
     }
   }
 ]
 ```
 
-Also note that `allUsers` is *statically typed* thanks to [Prisma Client's generated types](https://www.prisma.io/docs/orm/prisma-client/type-safety/operating-against-partial-structures-of-model-types). You can observe the type by hovering over the allUsers variable in your editor. It should be typed as follows:
+Also note that `allUsers` is _statically typed_ thanks to [Prisma Client's generated types](https://www.prisma.io/docs/orm/prisma-client/type-safety/operating-against-partial-structures-of-model-types). You can observe the type by hovering over the allUsers variable in your editor. It should be typed as follows:
 
 ```
 const allUsers: (User & {
@@ -335,7 +416,7 @@ const allUsers: (User & {
 })[]
 
 export type Post = {
-  id: number
+  id: string
   title: string
   content: string | null
   published: boolean
@@ -347,49 +428,49 @@ The query added new records to the `User` and the `Post` tables:
 
 **User**
 
-| id  | email             | name   |
-| --- | ----------------- | ------ |
+| id  | email             | name    |
+| --- | ----------------- | ------- |
 | 1   | "alice@prisma.io" | "Alice" |
 
 **Post**
 
-| id  | createdAt                  | updatedAt                  | title         | content | published | authorId |
-| --- | -------------------------- | -------------------------- | ------------- | ------- | --------- | -------- |
-| 1   | 2020-03-21T16:45:01.246Z   | 2020-03-21T16:45:01.246Z   | "Hello World" | null    | false     | 1        |
+| id                                     | createdAt                | updatedAt                | title         | content | published | authorId |
+| -------------------------------------- | ------------------------ | ------------------------ | ------------- | ------- | --------- | -------- |
+| adba97af-e778-4f8c-a23d-68bee76dc54b   | 2020-03-21T16:45:01.246Z | 2020-03-21T16:45:01.246Z | "Hello World" | null    | false     | 1        |
 
 **Profile**
 
-| id  | bio             | userId |
-| --- | --------------- | ------ |
-| 1   | "I like turtles" | 1      |
-
+| id                          | bio              | userId |
+| --------------------------- | ---------------- | ------ |
+| cm7z9taqm0000i9xaffrt44dm   | "I like turtles" | 1      |
 
 > Note: The numbers in the `authorId` column on `Post` and `userId` column on `Profile` both reference the `id` column of the `User` table, meaning the `id` value `1` column therefore refers to the first (and only) `User` record in the database.
 
 Before moving on to the next section, you'll "publish" the `Post` record you just created using an `update` query. Adjust the `main` function as follows:
 
 `index.ts`
-``` ts
+
+```ts
 async function main() {
   const post = await prisma.post.update({
-    where: { id: 1 },
+    where: { id: "adba97af-e778-4f8c-a23d-68bee76dc54b" },
     data: { published: true },
-  })
-  console.log(post)
+  });
+  console.log(post);
 }
 ```
 
 Now run the code using the same command as before:
 
-``` shell
+```shell
 npx tsx index.ts
 ```
 
 You will see the following output:
 
-``` shell
+```shell
 {
-  id: 1,
+  id: adba97af-e778-4f8c-a23d-68bee76dc54b,
   title: 'Hello World',
   content: null,
   published: true,
@@ -401,16 +482,16 @@ The `Post` record with an id of 1 now got updated in the database:
 
 **Post**
 
-| id  | title         | content | published | authorId |
-| --- | ------------- | ------- | --------- | -------- |
-| 1   | "Hello World" | null    | true      | 1        |
-
+| id                                     | title         | content | published | authorId |
+| -------------------------------------- | ------------- | ------- | --------- | -------- |
+| adba97af-e778-4f8c-a23d-68bee76dc54b   | "Hello World" | null    | true      | 1        |
 
 Fantastic, you just wrote new data into your database for the first time using Prisma Client 🚀
 
 ## 5. Next Steps
 
 ### 5.1. Build an app with Prisma ORM
+
 The Prisma blog features comprehensive tutorials about Prisma ORM, check out our latest ones:
 
 - [Build a fullstack app with Next.js](https://www.youtube.com/watch?v=QXxy8Uv1LnQ&ab_channel=ByteGrad)
@@ -419,7 +500,7 @@ The Prisma blog features comprehensive tutorials about Prisma ORM, check out our
 
 Prisma Studio is a visual editor for the data in your database. Run `npx prisma studio` in your terminal.
 
-``` shell
+```shell
 npx prisma studio --port 5555
 ```
 

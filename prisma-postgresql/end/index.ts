@@ -4,7 +4,7 @@ const prisma = new PrismaClient();
 
 async function main() {
   const post = await prisma.post.update({
-    where: { id: 1 },
+    where: { id: "adba97af-e778-4f8c-a23d-68bee76dc54b" },
     data: { published: true },
   });
   console.log(post);
