@@ -419,6 +419,10 @@ The Prisma blog features comprehensive tutorials about Prisma ORM, check out our
 
 Prisma Studio is a visual editor for the data in your database. Run `npx prisma studio` in your terminal.
 
+``` shell
+npx prisma studio --port 5555
+```
+
 If you are using [Prisma Postgres](https://www.prisma.io/postgres), you can also directly use Prisma Studio inside the [Console](https://console.prisma.io/?) by selecting the **Studio** tab in your project.
 
 ### 5.3 Get query insights and analytics with Prisma Optimize
