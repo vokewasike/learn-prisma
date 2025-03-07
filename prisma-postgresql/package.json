@@ -1,17 +1,26 @@
 {
+  "private": true,
   "name": "prisma-postgresql",
   "version": "1.0.0",
-  "description": "",
+  "description": "Learn how to get started with Prisma ORM and Postgresql.",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "npx tsx index.ts"
   },
   "keywords": [],
-  "author": "",
+  "author": "Kevin Wasike",
   "license": "ISC",
   "devDependencies": {
     "@types/node": "^22.13.9",
+    "prisma": "^6.4.1",
     "tsx": "^4.19.3",
     "typescript": "^5.8.2"
-  }
+  },
+  "dependencies": {
+    "@prisma/client": "^6.4.1"
+  },
+  "bugs": {
+    "url": "https://github.com/vokewasike/learn-prisma/issues"
+  },
+  "homepage": "https://github.com/vokewasike/learn-prisma#readme"
 }

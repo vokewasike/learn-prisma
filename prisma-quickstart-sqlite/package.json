@@ -2,7 +2,7 @@
   "private": true,
   "name": "prisma-quickstart-sqlite",
   "version": "1.0.0",
-  "description": "",
+  "description": "Learn how to get started with Prisma ORM.",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "npx tsx script.ts"
@@ -19,5 +19,9 @@
   },
   "dependencies": {
     "@prisma/client": "^6.4.1"
-  }
+  },
+  "bugs": {
+    "url": "https://github.com/vokewasike/learn-prisma/issues"
+  },
+  "homepage": "https://github.com/vokewasike/learn-prisma#readme"
 }

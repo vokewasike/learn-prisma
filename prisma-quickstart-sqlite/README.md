@@ -52,7 +52,19 @@ Finally, set up Prisma ORM with the init command of the Prisma CLI:
 npx prisma init --datasource-provider sqlite
 ```
 
-This creates a new `prisma` directory with a `schema.prisma` file and configures SQLite as your database. You're now ready to model your data and create your database with some tables.
+This creates a new `prisma` directory with a `schema.prisma` file and configures SQLite as your database. You'll also notice a `.env` file has been created with the following content:
+
+``` properties
+# Environment variables declared in this file are automatically made available to Prisma.
+# See the documentation for more detail: https://pris.ly/d/prisma-schema#accessing-environment-variables-from-the-schema
+
+# Prisma supports the native connection string format for PostgreSQL, MySQL, SQLite, SQL Server, MongoDB and CockroachDB.
+# See the documentation for all the connection string options: https://pris.ly/d/connection-strings
+
+DATABASE_URL="file:./dev.db"
+```
+
+You're now ready to model your data and create your database with some tables.
 
 ## 2. Model your data in the Prisma schema
 
