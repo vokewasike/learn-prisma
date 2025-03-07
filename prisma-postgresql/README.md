@@ -179,3 +179,250 @@ npm install @prisma/client
 ```
 
 The install command invokes `prisma generate` for you which reads your Prisma schema and generates a version of Prisma Client that is *tailored* to your models.
+
+![Prisma Client Install and Generate](./assets/prisma-client-install-and-generate-ece3e0733edc615e416d6d654c05e980.png)
+
+Whenever you update your prisma schema, you will have to update your database schema using either `npx prisma db push` or `npx prisma migrate dev`. These commands serve different purposes in managing your database schema with Prisma. Here’s a breakdown of when and why to use each:
+
+##### `npx prisma migrate dev`
+
+- **Purpose:** This command generates and applies a new migration based on your Prisma schema changes. It creates migration files that keep a history of changes.
+- **Use Case:** Use this when you want to maintain a record of database changes, which is essential for production environments or when working in teams. It allows for version control of your database schema.
+- **Benefits:** This command also includes checks for applying migrations in a controlled manner, ensuring data integrity.
+
+##### `npx prisma db push`
+
+- **Purpose:** This command is used to push your current Prisma schema to the database directly. It applies any changes you've made to your schema without creating migration files.
+- **Use Case:** It’s particularly useful during the development phase when you want to quickly sync your database schema with your Prisma schema without worrying about migration history.
+- **Caution:** It can overwrite data if your schema changes affect existing tables or columns, so it’s best for early-stage development or prototyping.
+
+## 4. Querying the database
+
+### 4.1. Write your first query with Prisma Client
+
+Now that you have generated [Prisma Client](https://www.prisma.io/docs/orm/prisma-client), you can start writing queries to read and write data in your database. For the purpose of this guide, you'll use a plain Node.js script to explore some basic features of Prisma Client.
+
+Create a new file named `index.ts` and add the following code to it:
+
+`index.ts`
+``` ts
+import { PrismaClient } from '@prisma/client'
+
+const prisma = new PrismaClient()
+
+async function main() {
+  // ... you will write your Prisma Client queries here
+}
+
+main()
+  .then(async () => {
+    await prisma.$disconnect()
+  })
+  .catch(async (e) => {
+    console.error(e)
+    await prisma.$disconnect()
+    process.exit(1)
+  })
+```
+
+Here's a quick overview of the different parts of the code snippet:
+
+1. Import the `PrismaClient` constructor from the `@prisma/client` node module
+2. Instantiate `PrismaClient`
+3. Define an `async` function named `main` to send queries to the database
+4. Call the `main` function
+5. Close the database connections when the script terminates
+
+Inside the `main` function, add the following query to read all `User` records from the database and print the result:
+
+`index.ts`
+``` ts
+async function main() {
+  // ... you will write your Prisma Client queries here
+  const allUsers = await prisma.user.findMany()
+  console.log(allUsers)
+}
+```
+
+Now run the code with this command:
+
+``` shell
+npx tsx index.ts
+```
+
+This should print an empty array because there are no User records in the database yet:
+
+``` output
+[]
+```
+
+### 4.2. Write data into the database
+
+The `findMany` query you used in the previous section only reads data from the database (although it was still empty). In this section, you'll learn how to write a query to write new records into the `Post` and `User` tables.
+
+Adjust the `main` function to send a `create` query to the database:
+
+`index.ts`
+
+``` ts
+async function main() {
+  await prisma.user.create({
+    data: {
+      name: 'Alice',
+      email: 'alice@prisma.io',
+      posts: {
+        create: { title: 'Hello World' },
+      },
+      profile: {
+        create: { bio: 'I like turtles' },
+      },
+    },
+  })
+
+  const allUsers = await prisma.user.findMany({
+    include: {
+      posts: true,
+      profile: true,
+    },
+  })
+  console.dir(allUsers, { depth: null })
+}
+```
+
+This code creates a new `User` record together with new `Post` and `Profile` records using a [nested write](https://www.prisma.io/docs/orm/prisma-client/queries/relation-queries#nested-writes) query. The `User` record is connected to the two other ones via the `Post.author` ↔ `User.posts` and `Profile.user` ↔ `User.profile` [relation fields](https://www.prisma.io/docs/orm/prisma-schema/data-model/relations#relation-fields) respectively.
+
+Notice that you're passing the `include` option to `findMany` which tells Prisma Client to include the `posts` and `profile` relations on the returned `User` objects.
+
+Run the code with this command:
+
+``` shell
+npx tsx index.ts
+```
+
+The output should look similar to this:
+
+``` shell
+[
+  {
+    email: 'alice@prisma.io',
+    id: 1,
+    name: 'Alice',
+    posts: [
+      {
+        content: null,
+        createdAt: 2020-03-21T16:45:01.246Z,
+        updatedAt: 2020-03-21T16:45:01.246Z,
+        id: 1,
+        published: false,
+        title: 'Hello World',
+        authorId: 1,
+      }
+    ],
+    profile: {
+      bio: 'I like turtles',
+      id: 1,
+      userId: 1,
+    }
+  }
+]
+```
+
+Also note that `allUsers` is *statically typed* thanks to [Prisma Client's generated types](https://www.prisma.io/docs/orm/prisma-client/type-safety/operating-against-partial-structures-of-model-types). You can observe the type by hovering over the allUsers variable in your editor. It should be typed as follows:
+
+```
+const allUsers: (User & {
+  posts: Post[]
+})[]
+
+export type Post = {
+  id: number
+  title: string
+  content: string | null
+  published: boolean
+  authorId: number | null
+}
+```
+
+The query added new records to the `User` and the `Post` tables:
+
+**User**
+
+| id  | email             | name   |
+| --- | ----------------- | ------ |
+| 1   | "alice@prisma.io" | "Alice" |
+
+**Post**
+
+| id  | createdAt                  | updatedAt                  | title         | content | published | authorId |
+| --- | -------------------------- | -------------------------- | ------------- | ------- | --------- | -------- |
+| 1   | 2020-03-21T16:45:01.246Z   | 2020-03-21T16:45:01.246Z   | "Hello World" | null    | false     | 1        |
+
+**Profile**
+
+| id  | bio             | userId |
+| --- | --------------- | ------ |
+| 1   | "I like turtles" | 1      |
+
+
+> Note: The numbers in the `authorId` column on `Post` and `userId` column on `Profile` both reference the `id` column of the `User` table, meaning the `id` value `1` column therefore refers to the first (and only) `User` record in the database.
+
+Before moving on to the next section, you'll "publish" the `Post` record you just created using an `update` query. Adjust the `main` function as follows:
+
+`index.ts`
+``` ts
+async function main() {
+  const post = await prisma.post.update({
+    where: { id: 1 },
+    data: { published: true },
+  })
+  console.log(post)
+}
+```
+
+Now run the code using the same command as before:
+
+``` shell
+npx tsx index.ts
+```
+
+You will see the following output:
+
+``` shell
+{
+  id: 1,
+  title: 'Hello World',
+  content: null,
+  published: true,
+  authorId: 1
+}
+```
+
+The `Post` record with an id of 1 now got updated in the database:
+
+**Post**
+
+| id  | title         | content | published | authorId |
+| --- | ------------- | ------- | --------- | -------- |
+| 1   | "Hello World" | null    | true      | 1        |
+
+
+Fantastic, you just wrote new data into your database for the first time using Prisma Client 🚀
+
+## 5. Next Steps
+
+### 5.1. Build an app with Prisma ORM
+The Prisma blog features comprehensive tutorials about Prisma ORM, check out our latest ones:
+
+- [Build a fullstack app with Next.js](https://www.youtube.com/watch?v=QXxy8Uv1LnQ&ab_channel=ByteGrad)
+
+### 5.2. Explore the data in Prisma Studio
+
+Prisma Studio is a visual editor for the data in your database. Run `npx prisma studio` in your terminal.
+
+If you are using [Prisma Postgres](https://www.prisma.io/postgres), you can also directly use Prisma Studio inside the [Console](https://console.prisma.io/?) by selecting the **Studio** tab in your project.
+
+### 5.3 Get query insights and analytics with Prisma Optimize
+
+[Prisma Optimize](https://www.prisma.io/docs/optimize) helps you generate insights and provides recommendations that can help you make your database queries faster. [Try it out now!](https://www.prisma.io/docs/optimize/getting-started)
+
+Optimize aims to help developers of all skill levels write efficient database queries, reducing database load and making applications more responsive.
