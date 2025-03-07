@@ -1,6 +1,6 @@
 # Prisma QuickStart SQLite
 
-https://www.prisma.io/docs/getting-started/quickstart-sqlite
+- https://www.prisma.io/docs/getting-started/quickstart-sqlite
 
 In this Quickstart guide, you'll learn how to get started with Prisma ORM from scratch using a plain TypeScript project and a local SQLite database file. It covers data modeling, migrations and querying a database.
 
@@ -18,8 +18,8 @@ You need [Node.js](https://nodejs.org/en/) installed on your machine (see [syste
 As a first step, create a project directory and navigate into it:
 
 ```bash
-mkdir quickstart-sqlite
-cd quickstart-sqlite
+mkdir prisma-quickstart-sqlite
+cd prisma-quickstart-sqlite
 ```
 
 Next, initialize a TypeScript project using npm:
