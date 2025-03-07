@@ -1,6 +1,6 @@
 {
   "private": true,
-  "name": "quickstart",
+  "name": "quickstart-sqlite",
   "version": "1.0.0",
   "description": "",
   "scripts": {

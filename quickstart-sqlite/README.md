@@ -18,8 +18,8 @@ You need [Node.js](https://nodejs.org/en/) installed on your machine (see [syste
 As a first step, create a project directory and navigate into it:
 
 ```bash
-mkdir quickstart
-cd quickstart
+mkdir quickstart-sqlite
+cd quickstart-sqlite
 ```
 
 Next, initialize a TypeScript project using npm:

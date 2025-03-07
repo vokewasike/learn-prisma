@@ -17,4 +17,4 @@ This is a monorepo containing multiple projects and examples showcasing differen
 ## Getting Started
 
 Each project in this repository will have its own setup instructions in its respective directory.
-You can start with the `quickstart` project directory for a basic introduction to Prisma setup and fundamental concepts.
+You can start with the `quickstart-sqlite` project directory for a basic introduction to Prisma setup and fundamental concepts.
