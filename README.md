@@ -20,3 +20,4 @@ Each project in this repository will have its own setup instructions in its resp
 
 - [`Quickstart with Sqlite`](./prisma-quickstart-sqlite/README.md)
 - [`Connecting to Postgresql`](./prisma-postgresql/README.md)
+- [`Configuring prisma schema`](./prisma-schema/README.md)
