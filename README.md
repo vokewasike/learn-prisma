@@ -18,6 +18,7 @@ This is a monorepo containing multiple projects and examples showcasing differen
 
 Each project in this repository will have its own setup instructions in its respective directory.
 
-- [`Quickstart with Sqlite`](./prisma-quickstart-sqlite/README.md)
-- [`Connecting to Postgresql`](./prisma-postgresql/README.md)
-- [`Configuring prisma schema`](./prisma-schema/README.md)
+- [Quickstart with Sqlite](./prisma-quickstart-sqlite/README.md)
+- [Connecting to Postgresql](./prisma-postgresql/README.md)
+- [Configuring prisma schema](./prisma-schema/README.md)
+- [Using Prisma ORM with Next.js](./prisma-nextjs/README.md)
